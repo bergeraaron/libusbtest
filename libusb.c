@@ -9,22 +9,22 @@
 #include <pthread.h>
 #include <libusb-1.0/libusb.h>
 
-#define RZ_KILLERBEE_USB_VENDOR         0x03EB
-#define RZ_KILLERBEE_USB_PRODUCT        0x210A
+#define BLE_VIEWTOOL_USB_VENDOR         0x03EB
+#define BLE_VIEWTOOL_USB_PRODUCT        0x210A
 
-#define RZ_KILLERBEE_SET_MODE           0x07
-#define RZ_KILLERBEE_SET_CHANNEL        0x08
-#define RZ_KILLERBEE_OPEN_STREAM        0x09
-#define RZ_KILLERBEE_CLOSE_STREAM       0x0A
+#define BLE_VIEWTOOL_SET_MODE           0x07
+#define BLE_VIEWTOOL_SET_CHANNEL        0x08
+#define BLE_VIEWTOOL_OPEN_STREAM        0x09
+#define BLE_VIEWTOOL_CLOSE_STREAM       0x0A
 
-#define RZ_KILLERBEE_CMD_MODE_AC        0x00
-#define RZ_KILLERBEE_CMD_MODE_NONE      0x04
+#define BLE_VIEWTOOL_CMD_MODE_AC        0x00
+#define BLE_VIEWTOOL_CMD_MODE_NONE      0x04
 
-#define RZ_KILLERBEE_CMD_EP             0x02
-#define RZ_KILLERBEE_REP_EP             0x84
-#define RZ_KILLERBEE_PKT_EP             0x81
+#define BLE_VIEWTOOL_CMD_EP             0x02
+#define BLE_VIEWTOOL_REP_EP             0x84
+#define BLE_VIEWTOOL_PKT_EP             0x81
 
-#define RZ_KILLERBEE_TIMEOUT            1000
+#define BLE_VIEWTOOL_TIMEOUT            1000
 
 libusb_context *maincontext = NULL;
 
@@ -61,7 +61,7 @@ int find_devices()
 
         printf("Vendor:Device = %04x:%04x\n", desc.idVendor, desc.idProduct);
 
-	if(desc.idVendor == RZ_KILLERBEE_USB_VENDOR && desc.idProduct == RZ_KILLERBEE_USB_PRODUCT)
+	if(desc.idVendor == BLE_VIEWTOOL_USB_VENDOR && desc.idProduct == BLE_VIEWTOOL_USB_PRODUCT)
 	{
 		printf("found device %d\n",(int)idx);
 		//libusb_device_handle *dev;
@@ -126,25 +126,25 @@ sleep(1);
     printf("set mode\n");
     int xfer = 0;
     unsigned char data[2];
-    data[0]=RZ_KILLERBEE_SET_MODE;
-    data[1]=RZ_KILLERBEE_CMD_MODE_AC;
+    data[0]=BLE_VIEWTOOL_SET_MODE;
+    data[1]=BLE_VIEWTOOL_CMD_MODE_AC;
 
-    rc = libusb_bulk_transfer(dev, RZ_KILLERBEE_CMD_EP, data, sizeof(data), &xfer, RZ_KILLERBEE_TIMEOUT);
+    rc = libusb_bulk_transfer(dev, BLE_VIEWTOOL_CMD_EP, data, sizeof(data), &xfer, BLE_VIEWTOOL_TIMEOUT);
     printf("set mode:%d xfer:%d\n",rc,xfer);
 sleep(1);
 
     printf("set channel\n");
-    data[0]=RZ_KILLERBEE_SET_CHANNEL;
+    data[0]=BLE_VIEWTOOL_SET_CHANNEL;
     data[1]=11;
 
-    rc = libusb_bulk_transfer(dev, RZ_KILLERBEE_CMD_EP, data, sizeof(data), &xfer, RZ_KILLERBEE_TIMEOUT);
+    rc = libusb_bulk_transfer(dev, BLE_VIEWTOOL_CMD_EP, data, sizeof(data), &xfer, BLE_VIEWTOOL_TIMEOUT);
     printf("set channel:%d xfer:%d\n",rc,xfer);
 sleep(1);
 
     //open stream
     printf("open stream\n");
-    data[0]=RZ_KILLERBEE_OPEN_STREAM;
-    rc = libusb_bulk_transfer(dev, RZ_KILLERBEE_CMD_EP, data, sizeof(data)-1, &xfer, RZ_KILLERBEE_TIMEOUT);
+    data[0]=BLE_VIEWTOOL_OPEN_STREAM;
+    rc = libusb_bulk_transfer(dev, BLE_VIEWTOOL_CMD_EP, data, sizeof(data)-1, &xfer, BLE_VIEWTOOL_TIMEOUT);
     printf("open stream:%d xfer:%d\n",rc,xfer);
 sleep(1);
 
@@ -153,7 +153,7 @@ sleep(1);
 
     while(1)
     {
-        rc = libusb_bulk_transfer(dev, RZ_KILLERBEE_PKT_EP, pktdata, sizeof(pktdata), &xfer, RZ_KILLERBEE_TIMEOUT);
+        rc = libusb_bulk_transfer(dev, BLE_VIEWTOOL_PKT_EP, pktdata, sizeof(pktdata), &xfer, BLE_VIEWTOOL_TIMEOUT);
         printf("channel:%d ret:%d xfer:%d\n",channel,rc,xfer);
         if(xfer > 0)
         {
