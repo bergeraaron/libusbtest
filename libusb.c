@@ -9,8 +9,8 @@
 #include <pthread.h>
 #include <libusb-1.0/libusb.h>
 
-#define BLE_VIEWTOOL_USB_VENDOR         0x03EB
-#define BLE_VIEWTOOL_USB_PRODUCT        0x210A
+#define BLE_VIEWTOOL_USB_VENDOR         0x046F
+#define BLE_VIEWTOOL_USB_PRODUCT        0x37B3
 
 #define BLE_VIEWTOOL_SET_MODE           0x07
 #define BLE_VIEWTOOL_SET_CHANNEL        0x08
@@ -21,8 +21,8 @@
 #define BLE_VIEWTOOL_CMD_MODE_NONE      0x04
 
 #define BLE_VIEWTOOL_CMD_EP             0x02
-#define BLE_VIEWTOOL_REP_EP             0x84
-#define BLE_VIEWTOOL_PKT_EP             0x81
+#define BLE_VIEWTOOL_REP_EP             0x81
+#define BLE_VIEWTOOL_PKT_EP             0x83
 
 #define BLE_VIEWTOOL_TIMEOUT            1000
 
@@ -71,7 +71,7 @@ int find_devices()
 		//set type 
 		usbdev.dev_type = 1;
 		usbdev.channel = 11;
-		//break;
+		break;
 	}
     }
     libusb_free_device_list(list, count);
@@ -115,24 +115,26 @@ sleep(1);
    //assert(rc < 0);
 
 sleep(1);
-/**/
+/**
     printf("libusb_set_interface_alt_setting\n");
     rc = libusb_set_interface_alt_setting(dev,0x00,0x00);	
     printf("libusb_set_interface_alt_setting rc:%d\n",rc);
     //assert(rc < 0);
 
 sleep(1);
-/**/
+**/
     printf("set mode\n");
     int xfer = 0;
     unsigned char data[2];
+/**
     data[0]=BLE_VIEWTOOL_SET_MODE;
     data[1]=BLE_VIEWTOOL_CMD_MODE_AC;
 
     rc = libusb_bulk_transfer(dev, BLE_VIEWTOOL_CMD_EP, data, sizeof(data), &xfer, BLE_VIEWTOOL_TIMEOUT);
     printf("set mode:%d xfer:%d\n",rc,xfer);
 sleep(1);
-
+**/
+/**
     printf("set channel\n");
     data[0]=BLE_VIEWTOOL_SET_CHANNEL;
     data[1]=11;
@@ -140,26 +142,27 @@ sleep(1);
     rc = libusb_bulk_transfer(dev, BLE_VIEWTOOL_CMD_EP, data, sizeof(data), &xfer, BLE_VIEWTOOL_TIMEOUT);
     printf("set channel:%d xfer:%d\n",rc,xfer);
 sleep(1);
-
+**/
+/**
     //open stream
     printf("open stream\n");
-    data[0]=BLE_VIEWTOOL_OPEN_STREAM;
+    data[0]=0x03;//BLE_VIEWTOOL_OPEN_STREAM;
     rc = libusb_bulk_transfer(dev, BLE_VIEWTOOL_CMD_EP, data, sizeof(data)-1, &xfer, BLE_VIEWTOOL_TIMEOUT);
     printf("open stream:%d xfer:%d\n",rc,xfer);
 sleep(1);
-
+**/
     //read data
     unsigned char pktdata[1024];memset(pktdata,0x00,1024);
 
     while(1)
     {
         rc = libusb_bulk_transfer(dev, BLE_VIEWTOOL_PKT_EP, pktdata, sizeof(pktdata), &xfer, BLE_VIEWTOOL_TIMEOUT);
-        printf("channel:%d ret:%d xfer:%d\n",channel,rc,xfer);
+        //printf("channel:%d ret:%d xfer:%d\n",channel,rc,xfer);
         if(xfer > 0)
         {
             for (int i = 0; i < xfer; i++)
                 printf(" %02X", pktdata[i]);
-            printf("\n");
+            printf(" (%d)\n",xfer);
             memset(pktdata,0x00,1024);
         }
     //    sleep(1);
